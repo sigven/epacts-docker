@@ -17,12 +17,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN apt-get update && apt-get install -y libtool
 
+RUN mkdir ~/.R && chmod 777 ~/.R
+ADD Makevars ~/.R/
+ENV R_HOME=~/.R
+
 RUN ln -s /usr/bin/gcc-5 /usr/local/bin/gcc
+RUN ln -s /usr/bin/g++-5 /usr/local/bin/g++
+
+ENV PATH=/usr/local/bin:$PATH
 
 RUN git clone https://github.com/statgen/EPACTS.git
 WORKDIR EPACTS
 RUN autoreconf -vfi
-RUN ./configure --prefix /usr/local/bin
+RUN CC="gcc-5" CXX="g++-5" ./configure --prefix /usr/local/bin
 RUN make -j 1
 RUN make -j 1 install
 
